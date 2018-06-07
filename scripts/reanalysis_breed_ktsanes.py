@@ -146,7 +146,7 @@ def histo(a, b):
         ax = plt.bar(a_bar_positions, a, bar_width, label='actual answers')
         bx = plt.bar(b_bar_positions, b, bar_width, label='predicted majority')
 
-        # make bar plots in greyscale
+        # alternatively: make bar plots in greyscale
         # ax = plt.bar(a_bar_positions, a, bar_width, color="0.2",
         #              label='actual answers')
         # bx = plt.bar(b_bar_positions, b, bar_width, color="0.5",
