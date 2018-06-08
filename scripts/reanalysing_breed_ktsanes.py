@@ -1,15 +1,10 @@
 import numpy as np
-from scipy.stats import variation
-from scipy.stats import entropy
-from scipy.stats.mstats import gmean
-from statsmodels.stats.inter_rater import fleiss_kappa
-from numpy.linalg import norm
 from collections import Counter
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import style
 style.use('ggplot')
+plt.rcParams["font.family"] = "Times New Roman"
 
 """
 This python script calculates metaknowledge types
@@ -179,10 +174,12 @@ y = predictions()
 y_bar = sum(y)/len(y)
 print('y_bar =', y_bar)
 
+# do some plotting:
+histo(x_bar, y_bar)
+
 # find the most popular opinion
 mpa = x_bar.tolist().index(max(x_bar))
 print('most popular opinion is in position', mpa)
-
 
 # calculating the KLD for the average y_bar instead of the
 # individual y's:
@@ -191,21 +188,8 @@ print('\nkl_score, x_bar vs. y_bar :\n',
       np.around(np.array(kl_xy_bar), 3))
 
 # calculate the Kullback-Leiber Divergence for each respondent
-kl_scores = [KL(x_bar, prediction) for prediction in y]
-print('\nestimation errors:\n', np.around(np.array(kl_scores), 2))
-
-# find the average estimated support to each opinion by opinion group:
-print('\nmean estimated support to each opinion by opinion-group:')
-kl_opinion_groups = []
-for i in range(Constants.k):
-    nums = len([x for j in x if j == i])
-    y_dummy = [estimate for pos, estimate in enumerate(y) if x[pos] == i]
-    y_T_dummy = np.transpose(y_dummy)
-    est_op_group = np.array([sum(y_T_dummy[i]) for i in range(Constants.k)])/nums
-    eog = np.append(est_op_group, KL(x_bar, est_op_group))
-    kl_opinion_groups.append(KL(x_bar, est_op_group))
-    print(i, nums, eog)
-
+# kl_scores = [KL(x_bar, prediction) for prediction in y]
+# print('\nestimation errors:\n', np.around(np.array(kl_scores), 2))
 
 # find the metaknowledge types:
 tc, fc, td, fd, fa, psychological_state, u, y_max = metaknowledge_type(x, y, mpa)
@@ -214,17 +198,8 @@ print('\n# true consent:', tc, 100*tc/tot, '%\n# false consent:', fc, 100*fc/tot
       '%\n# true dissent:', td, 100*td/tot, '%\n# false dissent:', fd, 100*fd/tot,
       '%\n# false attr.:', fa, 100*fa/tot, '%\nchecksum=', tot)
 
-# print responsematrix
+# print response matrix
 print('\nresponse matrix:\n', np.matrix(u))
-
-tot_predicted = []
-for j in range(Constants.k):
-    tot_predicted.append(sum((u[i][j] for i in range(len(u)))))
-tot_predicted = np.array([i for i in tot_predicted])/tot
-print('frequency of predictions:\n', tot_predicted)
-
-# do some plotting:
-histo(x_bar, tot_predicted)
 
 upper_sum = sum(sum((u[i][i+1:] for i in range(len(u))), []))
 lower_sum = sum(sum((u[i][:i] for i in range(len(u))), []))
